@@ -1,0 +1,10 @@
+[package]
+name = "telemetry_reader_lib"
+version = "0.1.0"
+edition = "2021"
+authors = ["Vladyslav Selishchev <vladyslav.selishchev@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+winapi = {version = "0.3.9", features = ["std","memoryapi","winnt","errhandlingapi","synchapi","handleapi"] }

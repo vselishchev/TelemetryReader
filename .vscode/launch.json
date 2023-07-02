@@ -8,9 +8,9 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug Rust",
-            "program": "${workspaceFolder}/target/debug/telemetry_reader",
+            "program": "${workspaceFolder}/telemetry_app/target/debug/telemetry_reader",
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/telemetry_app"
         }
     ]
 }

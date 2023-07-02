@@ -1,13 +1,10 @@
 [package]
-name = "TelemetryReader"
+name = "telemetry_reader"
 version = "0.1.0"
 edition = "2021"
-authors = ["vlasel <vladyslav.selishchev@gmail.com>"]
+authors = ["Vladyslav Selishchev <vladyslav.selishchev@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
-[[bin]]
-name = "telemetry_reader"
-path = "src/main.rs"
+telemetry_reader_lib = {path = "../telemetry_lib"}
