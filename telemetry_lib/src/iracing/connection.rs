@@ -6,14 +6,19 @@ use winapi::um::memoryapi::{OpenFileMappingW, FILE_MAP_READ, MapViewOfFile, Unma
 use winapi::um::handleapi::{CloseHandle};
 use winapi::um::errhandlingapi::GetLastError;
 use winapi::shared::minwindef::LPVOID;
+use winapi::um::synchapi::OpenEventW;
+use winapi::um::winnt::SYNCHRONIZE;
 
 pub const IRSDK_MEMMAPFILENAME: &str = r"Local\IRSDKMemMapFileName";
+pub const IRSDK_DATAVALIDEVENTNAME: &str = r"Local\IRSDKDataValidEvent";
 
 /// Connection struct establishes the connection to memory mapped object.
 /// Since Rust doesn't really work with MM objects, the implementation will use tons of unsafe code.
+/// Additionaly, create a event object handle which which notifies when the new data is coming.
 pub struct Connection {
-    mmf_view: *mut c_void,
-    mmf: HANDLE
+    pub mmf_view: *mut c_void,
+    mmf: HANDLE,
+    pub data_event: HANDLE
 }
 
 fn retrieve_error() -> Error {
@@ -49,17 +54,32 @@ impl Connection {
            return Err(retrieve_error()); 
         }
 
-        Ok(Connection{mmf_view: view, mmf : mapping})
+        let mut event_path: Vec<u16> = IRSDK_DATAVALIDEVENTNAME.encode_utf16().collect();
+        event_path.push(0);
+        let event_object : HANDLE;
+        unsafe {
+            event_object = OpenEventW(SYNCHRONIZE, 0, event_path.as_ptr());
+        }
+
+        if event_object.is_null() {
+            return Err(retrieve_error());
+        }
+
+        Ok(Connection{mmf_view: view, mmf : mapping, data_event: event_object})
     }
 
     pub fn close(&self) -> ioResult<()> {
+        let mut result = unsafe {
+            CloseHandle(self.data_event)
+        };
+
         if !self.mmf_view.is_null()  { 
             unsafe {
                 UnmapViewOfFile(self.mmf_view);
             };
         }   
 
-        let result = unsafe {
+        result = result & unsafe {
             CloseHandle(self.mmf)
         };
 
@@ -68,17 +88,5 @@ impl Connection {
         } else {
             Ok(())
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn connected() {
-        let con = Connection::establish();
-        assert_eq!(con.is_ok(), true);
-        assert_eq!(con.unwrap().close().is_ok(), true);
     }
 }

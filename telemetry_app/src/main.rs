@@ -1,8 +1,11 @@
-use telemetry_reader_lib::iracing::connection;
+use telemetry_reader_lib::iracing;
 
 fn main() {
-    let con = connection::Connection::establish();
-    if con.is_ok() {
-        con.unwrap().close().expect("failed to close;");
+    let client_result = iracing::iracing_client::IRacingClient::start();
+    if !client_result.is_ok() {
+        print!("Failed to establish connection to IRacing memory mapped file.");
     }
+
+    let mut client = client_result.unwrap();
+    client.end();
 }

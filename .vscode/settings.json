@@ -1,5 +1,6 @@
 {
     "rust-analyzer.linkedProjects": [
         "./telemetry_app/Cargo.toml",
+        "./telemetry_lib/Cargo.toml"
     ]
 }

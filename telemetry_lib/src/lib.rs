@@ -1,3 +1,1 @@
-pub mod iracing {
-    pub mod connection;
-}
+pub mod iracing;
